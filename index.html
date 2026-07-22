@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>taina lab 01 — октант-орнамент</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0d0a08;--panel:#15100b;--panel2:#1d1610;--gold:#c9a876;--gold-hot:#e8c890;--gold-dim:#8f7451;
+--parchment:#ede3d0;--muted:#94836a;--line:rgba(201,168,118,.22);
+--mono:'JetBrains Mono',monospace;--sans:'Inter',system-ui,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--ink);color:var(--parchment);font-family:var(--sans);line-height:1.5;
+background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(201,168,118,.07),transparent);min-height:100vh}
+a{color:var(--gold);text-decoration:none}a:hover{color:var(--gold-hot)}
+.wrap{max-width:1300px;margin:0 auto;padding:0 18px}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:14px;height:56px}
+.mark{font-family:var(--mono);font-weight:700;font-size:18px;letter-spacing:.06em;color:var(--parchment);display:flex;align-items:center;gap:7px}
+.mark::after{content:'';width:7px;height:7px;background:var(--gold);display:inline-block}
+.lab-tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--gold);border:1px solid var(--line);border-radius:6px;padding:3px 9px;text-transform:uppercase}
+.back{margin-left:auto;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.head{padding:22px 0 4px}
+h1{font-family:var(--mono);font-size:clamp(19px,2.6vw,26px);font-weight:700;margin-bottom:6px}
+.sub{color:var(--muted);font-size:13.5px;max-width:78ch;margin-bottom:18px}
+.lab{display:grid;grid-template-columns:260px 1fr;gap:20px;padding-bottom:50px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;align-self:start;display:flex;flex-direction:column;gap:14px}
+label{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--gold-dim);text-transform:uppercase;display:block;margin-bottom:6px}
+input[type=text]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--parchment);font-family:var(--mono);font-size:16px;padding:10px 12px;outline:none;letter-spacing:.08em}
+input[type=text]:focus{border-color:var(--gold)}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.rowval{display:flex;justify-content:space-between;align-items:baseline}
+.rowval span{font-family:var(--mono);font-size:11.5px;color:var(--gold)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button{font-family:var(--mono);font-size:12.5px;font-weight:600;padding:10px 13px;border-radius:8px;border:1px solid var(--line);cursor:pointer;background:transparent;color:var(--muted);transition:.15s}
+button:hover{color:var(--gold-hot);border-color:var(--gold-dim)}
+button.gold{background:linear-gradient(160deg,rgba(201,168,118,.2),rgba(201,168,118,.08));border-color:rgba(201,168,118,.55);color:var(--gold-hot)}
+button.gold:hover{border-color:var(--gold-hot);box-shadow:0 0 18px rgba(201,168,118,.2)}
+button:focus-visible{outline:2px solid var(--gold-hot);outline-offset:2px}
+.stat{font-family:var(--mono);font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:4px}
+.stat b{color:var(--gold);font-weight:600}
+.warn{color:#e5a053;display:none}
+.hint{font-size:11px;color:var(--gold-dim);font-family:var(--mono);line-height:1.45}
+.board{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:center;min-height:60vh}
+canvas{width:100%;max-width:min(84vh,860px);height:auto;image-rendering:pixelated;border-radius:4px;background:#000;display:block}
+@media(max-width:900px){.lab{grid-template-columns:1fr}.board{min-height:auto}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <span class="mark">taina</span><span class="lab-tag">lab 01</span>
+  <a class="back" href="https://astra31415926.github.io/taina/">← на сайт</a>
+</div></header>
+
+<main class="wrap">
+  <div class="head">
+    <h1>Октант-орнамент</h1>
+    <p class="sub">Текст перетворюється на потік бітів (0 і 1) і порядково заповнює октант — трикутну восьму частину поля. Кожна одиниця дзеркалиться 8 разів навколо центра. Кількість рядків залежить від довжини тексту. Чорно-біле, без згладжування.</p>
+  </div>
+
+  <div class="lab">
+    <div class="panel">
+      <div>
+        <label for="txt">Текст · до 12 символів</label>
+        <input type="text" id="txt" maxlength="12" value="ТАЇНА" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="btns">
+        <button class="gold" id="gen-btn" style="flex:1">⌁ Згенерувати</button>
+      </div>
+      <div>
+        <div class="rowval"><label for="size">Поле · непарне</label><span id="sizev">141×141</span></div>
+        <input type="range" id="size" min="25" max="255" step="2" value="141">
+      </div>
+      <div class="btns">
+        <button id="save">⤓ PNG</button>
+        <button id="invert">◑ Інверсія</button>
+      </div>
+      <div class="stat">
+        <span>Символів: <b id="nch">0</b> · біт: <b id="bits">0</b></span>
+        <span>Рядків октанта: <b id="rows">0</b> / <b id="maxrows">0</b></span>
+        <span>Живих пікселів: <b id="alive">0</b></span>
+        <span class="warn" id="warn">Бітів більше, ніж уміщає октант — збільш поле</span>
+        <span class="hint">Октант — це ⅛ квадрата. Радіус = (поле−1)/2, тож рядків уміщається стільки ж.</span>
+      </div>
+    </div>
+    <div class="board"><canvas id="cv"></canvas></div>
+  </div>
+</main>
+
+<script>
+/* ===== власний піксельний шрифт 5×7 (авторський) ===== */
+const G=s=>s.split(' ');
+const FONT={
+'A':G('01110 10001 10001 11111 10001 10001 10001'),'B':G('11110 10001 10001 11110 10001 10001 11110'),
+'C':G('01110 10001 10000 10000 10000 10001 01110'),'D':G('11100 10010 10001 10001 10001 10010 11100'),
+'E':G('11111 10000 10000 11110 10000 10000 11111'),'F':G('11111 10000 10000 11110 10000 10000 10000'),
+'G':G('01110 10001 10000 10111 10001 10001 01111'),'H':G('10001 10001 10001 11111 10001 10001 10001'),
+'I':G('01110 00100 00100 00100 00100 00100 01110'),'J':G('00111 00010 00010 00010 00010 10010 01100'),
+'K':G('10001 10010 10100 11000 10100 10010 10001'),'L':G('10000 10000 10000 10000 10000 10000 11111'),
+'M':G('10001 11011 10101 10101 10001 10001 10001'),'N':G('10001 11001 10101 10011 10001 10001 10001'),
+'O':G('01110 10001 10001 10001 10001 10001 01110'),'P':G('11110 10001 10001 11110 10000 10000 10000'),
+'Q':G('01110 10001 10001 10001 10101 10010 01101'),'R':G('11110 10001 10001 11110 10100 10010 10001'),
+'S':G('01111 10000 10000 01110 00001 00001 11110'),'T':G('11111 00100 00100 00100 00100 00100 00100'),
+'U':G('10001 10001 10001 10001 10001 10001 01110'),'V':G('10001 10001 10001 10001 10001 01010 00100'),
+'W':G('10001 10001 10001 10101 10101 11011 10001'),'X':G('10001 01010 00100 00100 00100 01010 10001'),
+'Y':G('10001 10001 01010 00100 00100 00100 00100'),'Z':G('11111 00001 00010 00100 01000 10000 11111'),
+'0':G('01110 10001 10011 10101 11001 10001 01110'),'1':G('00100 01100 00100 00100 00100 00100 01110'),
+'2':G('01110 10001 00001 00110 01000 10000 11111'),'3':G('11110 00001 00001 01110 00001 00001 11110'),
+'4':G('00010 00110 01010 10010 11111 00010 00010'),'5':G('11111 10000 11110 00001 00001 10001 01110'),
+'6':G('00110 01000 10000 11110 10001 10001 01110'),'7':G('11111 00001 00010 00100 01000 01000 01000'),
+'8':G('01110 10001 10001 01110 10001 10001 01110'),'9':G('01110 10001 10001 01111 00001 00010 01100'),
+'А':G('01110 10001 10001 11111 10001 10001 10001'),'Б':G('11111 10000 10000 11110 10001 10001 11110'),
+'В':G('11110 10001 10001 11110 10001 10001 11110'),'Г':G('11111 10000 10000 10000 10000 10000 10000'),
+'Ґ':G('00001 11111 10000 10000 10000 10000 10000'),'Д':G('00110 01010 01010 01010 01010 11111 10001'),
+'Е':G('11111 10000 10000 11110 10000 10000 11111'),'Є':G('01110 10001 10000 11100 10000 10001 01110'),
+'Ж':G('10101 10101 01110 00100 01110 10101 10101'),'З':G('01110 10001 00001 00110 00001 10001 01110'),
+'И':G('10001 10001 10011 10101 11001 10001 10001'),'І':G('01110 00100 00100 00100 00100 00100 01110'),
+'Ї':G('01010 00000 01110 00100 00100 00100 01110'),'Й':G('01110 00000 10001 10011 10101 11001 10001'),
+'К':G('10001 10010 10100 11000 10100 10010 10001'),'Л':G('00111 01001 01001 01001 01001 01001 10001'),
+'М':G('10001 11011 10101 10101 10001 10001 10001'),'Н':G('10001 10001 10001 11111 10001 10001 10001'),
+'О':G('01110 10001 10001 10001 10001 10001 01110'),'П':G('11111 10001 10001 10001 10001 10001 10001'),
+'Р':G('11110 10001 10001 11110 10000 10000 10000'),'С':G('01110 10001 10000 10000 10000 10001 01110'),
+'Т':G('11111 00100 00100 00100 00100 00100 00100'),'У':G('10001 10001 10001 01111 00001 10001 01110'),
+'Ф':G('00100 01110 10101 10101 10101 01110 00100'),'Х':G('10001 01010 00100 00100 00100 01010 10001'),
+'Ц':G('10010 10010 10010 10010 10010 11111 00001'),'Ч':G('10001 10001 10001 01111 00001 00001 00001'),
+'Ш':G('10101 10101 10101 10101 10101 10101 11111'),'Щ':G('10101 10101 10101 10101 10101 11111 00001'),
+'Ь':G('10000 10000 10000 11110 10001 10001 11110'),'Ю':G('10010 10101 10101 11101 10101 10101 10010'),
+'Я':G('01111 10001 10001 01111 00101 01001 10001'),'Э':G('11110 00001 00001 01111 00001 00001 11110'),
+'Ы':G('10001 10001 10001 11101 10101 10101 11101'),'Ъ':G('11000 01000 01000 01110 01001 01001 01110'),
+' ':G('00000 00000 00000 00000 00000 00000 00000'),'-':G('00000 00000 00000 01110 00000 00000 00000'),
+'.':G('00000 00000 00000 00000 00000 00000 00100'),'!':G('00100 00100 00100 00100 00100 00000 00100'),
+'?':G('01110 10001 00001 00110 00100 00000 00100'),'+':G('00000 00100 00100 11111 00100 00100 00000'),
+'♥':G('01010 11111 11111 01110 00100 00000 00000')
+};
+
+let N=141, grid=new Uint8Array(N*N), inverted=false;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+ctx.imageSmoothingEnabled=false;
+const off=document.createElement('canvas'), octx=off.getContext('2d');
+const $=id=>document.getElementById(id);
+
+function normalize(t){return [...t.toUpperCase().replaceAll('Ё','Е')].filter(ch=>FONT[ch]).slice(0,12)}
+
+/* текст → потік бітів: гліфи символів підряд */
+function toBits(chars){
+  const out=[];
+  for(const ch of chars)for(const row of FONT[ch])for(const b of row)out.push(b==='1'?1:0);
+  return out;
+}
+
+/* дзеркалимо клітинку октанта (i=рядок від центру, j=позиція в рядку) у 8 секторів */
+function mirror8(c,i,j){
+  const o=[[i,j],[j,i],[-i,j],[-j,i],[i,-j],[j,-i],[-i,-j],[-j,-i]];
+  for(let k=0;k<8;k++){
+    const x=c+o[k][0], y=c+o[k][1];
+    if(x>=0&&y>=0&&x<N&&y<N)grid[y*N+x]=1;
+  }
+}
+
+/* порядкове заповнення октанта: рядок i має i+1 клітинок (0<=j<=i<=R) */
+function fillOctant(bits){
+  const c=(N-1)/2, R=c;
+  let idx=0, rows=0;
+  for(let i=0;i<=R&&idx<bits.length;i++){
+    rows=i+1;
+    for(let j=0;j<=i&&idx<bits.length;j++){
+      if(bits[idx])mirror8(c,i,j);
+      idx++;
+    }
+  }
+  return {rows,maxRows:R+1,overflow:idx<bits.length};
+}
+
+function generate(){
+  grid=new Uint8Array(N*N);
+  const chars=normalize($('txt').value);
+  const bits=toBits(chars);
+  const res=fillOctant(bits);
+  let alive=0;for(let i=0;i<grid.length;i++)alive+=grid[i];
+  $('nch').textContent=chars.length;
+  $('bits').textContent=bits.length;
+  $('rows').textContent=res.rows;
+  $('maxrows').textContent=res.maxRows;
+  $('alive').textContent=alive;
+  $('warn').style.display=res.overflow?'block':'none';
+  fit();draw();
+}
+
+let K=4;
+function fit(){
+  const box=Math.min(860,Math.floor(window.innerHeight*0.84));
+  K=Math.max(1,Math.floor(box/N));
+  cv.width=cv.height=N*K;off.width=off.height=N;
+  ctx.imageSmoothingEnabled=false;
+}
+function draw(){
+  const img=octx.createImageData(N,N), d=img.data;
+  const fg=inverted?0:255, bg=inverted?255:0;
+  for(let i=0,p=0;i<N*N;i++,p+=4){
+    const v=grid[i]?fg:bg;
+    d[p]=d[p+1]=d[p+2]=v;d[p+3]=255;
+  }
+  octx.putImageData(img,0,0);
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(off,0,0,N,N,0,0,cv.width,cv.height);
+}
+
+$('gen-btn').onclick=generate;
+$('txt').oninput=generate;
+$('size').oninput=e=>{$('sizev').textContent=e.target.value+'×'+e.target.value};
+$('size').onchange=e=>{N=+e.target.value;generate()};
+$('invert').onclick=()=>{inverted=!inverted;draw()};
+$('save').onclick=()=>{
+  const scale=Math.max(1,Math.floor(1024/N));
+  const ex=document.createElement('canvas');ex.width=ex.height=N*scale;
+  const ec=ex.getContext('2d');ec.imageSmoothingEnabled=false;
+  ec.drawImage(off,0,0,N,N,0,0,ex.width,ex.height);
+  const name='taina-octant-'+(normalize($('txt').value).join('')||'empty')+'.png';
+  ex.toBlob(bl=>{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=name;a.click();URL.revokeObjectURL(a.href)});
+};
+window.addEventListener('resize',()=>{fit();draw()});
+
+generate();
+</script>
+</body>
+</html>
